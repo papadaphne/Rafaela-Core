@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rafaelax - Order Management</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .online {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .offline {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, button {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #2575fc;
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .action-btn {
+            padding: 8px 12px;
+            margin-right: 5px;
+            width: auto;
+            font-size: 0.85rem;
+        }
+        
+        .delete-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+        
+        .edit-btn {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+        }
+        
+        .sync-notice {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .profit {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Rafaelax Order Management</h1>
+            <div id="connection-status" class="status online">Online</div>
+        </header>
+        
+        <div class="card">
+            <h2>Tambah Order Baru</h2>
+            <form id="order-form">
+                <div class="form-group">
+                    <label for="customer">Nama Customer</label>
+                    <input type="text" id="customer" required placeholder="Masukkan nama customer">
+                </div>
+                
+                <div class="form-group">
+                    <label for="product">Nama Produk</label>
+                    <input type="text" id="product" required placeholder="Masukkan nama produk">
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Harga Jual (Rp)</label>
+                    <input type="number" id="price" required placeholder="Masukkan harga jual" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="hpp">Harga Pokok Penjualan/HPP (Rp)</label>
+                    <input type="number" id="hpp" required placeholder="Masukkan HPP" min="0">
+                </div>
+                
+                <button type="submit">Simpan Order</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Daftar Order</h2>
+            <div id="loading">Memuat data order...</div>
+            <table id="orders-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Produk</th>
+                        <th>Harga</th>
+                        <th>HPP</th>
+                        <th>Profit</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-list">
+                    <!-- Data order akan dimuat di sini -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="sync-notice" class="sync-notice">
+            Sedang offline. Data akan disinkronisasi ketika koneksi tersedia.
+        </div>
+    </div>
+
+    <!-- Firebase App (core Firebase SDK) -->
+    <script type="module" src="firebase.js"></script>
+    
+    <!-- Aplikasi utama -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
