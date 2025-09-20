@@ -1,0 +1,22 @@
+
+{
+  "name": "Rafaela Print - Aplikasi Manajemen",
+  "short_name": "RafaelaPrint",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "description": "Aplikasi untuk mengelola bisnis Rafaela Print.",
+  "icons": [
+    {
+      "src": "rafaela_logo_mono.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "rafaela_logo_mono.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
